@@ -14,7 +14,7 @@ from model_combobox_delegate import ComboBoxDelegate
 
 
 class GuiTable(QtWidgets.QWidget):
-    def __init__(self, layout, data_path="data.csv"):
+    def __init__(self, data_path="data.csv", params=None):
         super().__init__()
 
         # load data and add empty row
@@ -24,7 +24,8 @@ class GuiTable(QtWidgets.QWidget):
         # set model and add it to the layout
         self.table = QTableView()
         self.model = PandasModel(data)
-        self.table.setModel(self.model)       
+        self.table.setModel(self.model)     
+        self.table.setFixedSize(params.table["size"][0], params.table["size"][1])  
 
         
         # create empty row
@@ -35,6 +36,7 @@ class GuiTable(QtWidgets.QWidget):
         self.table_new_row = QTableView()
         self.model_new_row = PandasModel(data=pd.DataFrame(empty_row))
         self.table_new_row.setModel(self.model_new_row)
+        self.table_new_row.setFixedSize(params.table_new_row["size"][0], params.table_new_row["size"][1])  
 
         self.delegate = ComboBoxDelegate(parent=self, data=data)
         self.table.setItemDelegate(self.delegate)
@@ -42,8 +44,7 @@ class GuiTable(QtWidgets.QWidget):
         self.table_new_row.setItemDelegate(self.delegate_new_row)
 
 
-        layout.addWidget(self.table)
-        layout.addWidget(self.table_new_row)       
+             
 
         # # add empty row
         # self.model.addRow()

@@ -10,7 +10,7 @@ from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 from gui_map_cb_handler import GuiMapCbHandler
 
 class GuiMap(QtWidgets.QWidget):
-    def __init__(self, gui_main, layout, df):
+    def __init__(self, gui_main, df, params):
         super().__init__()
 
         coordinate = (47.548, 7.591)
@@ -31,11 +31,11 @@ class GuiMap(QtWidgets.QWidget):
         data = io.BytesIO()
         m.save(data, close_file=False)
 
-        webView = QWebEngineView() # start web engine
+        self.webView = QWebEngineView() # start web engine
         page = GuiMapCbHandler(gui_main=gui_main)
-        webView.setPage(page)
-        webView.setHtml(data.getvalue().decode()) #give html of folium map to webengine
-        layout.addWidget(webView)
+        self.webView.setPage(page)
+        self.webView.setHtml(data.getvalue().decode()) #give html of folium map to webengine
+        
 
     def addMarkers(self, map_object, df):
 
