@@ -60,6 +60,9 @@ class GuiTable(QtWidgets.QWidget):
     def getData(self):
         return self.model.getData()
     
+    def getSortParams(self):
+        return self._sort_column, self._sort_entry, self._sort_ascending
+    
     def setSortColumn(self, column):
         # do nothing if column is already selected
         if column == self._sort_column:

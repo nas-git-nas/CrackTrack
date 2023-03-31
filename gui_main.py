@@ -7,58 +7,43 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QLabel
 import jinja2
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
+from PyQt5.QtGui import QPixmap, QResizeEvent
 
 from gui_map import GuiMap
 from gui_info import GuiInfo
 from gui_table import GuiTable
 from params import Params
+from gui_images import GuiImages
 
 class GuiMain(QtWidgets.QWidget):
     def __init__(self, df):
         super().__init__()
         
         self.params = Params()
-
         self.df = df
-
-        self.setWindowTitle('Folium map in PyQt')
-        self.window_width, self.window_height = (1200, 800)
-        self.setMinimumSize(self.window_width, self.window_height)
-        self.resize(self.params.main["size"][0], self.params.main["size"][1])
-
+        
+        # add map
         self.gui_map = GuiMap(
             gui_main=self,
             df=df,
             params=self.params,
         )
 
-        # loading image
-        pixmap = QtGui.QPixmap('img.jpg')
-        self.images = QLabel()
-        self.images.setPixmap(pixmap)
-        self.images.setFixedSize(self.params.images["size"][0], self.params.images["size"][1])
-        
+        # add images
+        self.gui_images = GuiImages()
 
-
-
-
+        # add table
         self.gui_table = GuiTable(
             params=self.params,
         )
 
-        
-
         # add AddRoute button
         self.button_add_route = QtWidgets.QPushButton('Add Route')
         self.button_add_route.clicked.connect(self.cbButtonAddRoute)
-        self.button_add_route.setFixedSize(self.params.button_add_route["size"][0], self.params.button_add_route["size"][1])
-        
 
         # add Save button
         self.button_save = QtWidgets.QPushButton('Save')
         self.button_save.clicked.connect(self.cbButtonSave)
-        self.button_save.setFixedSize(self.params.button_save["size"][0], self.params.button_save["size"][1])
-        
 
         # add combobox for sorting
         self.sort_combobox = QtWidgets.QComboBox(self)
@@ -66,67 +51,75 @@ class GuiMain(QtWidgets.QWidget):
         for col in data.columns:
             self.sort_combobox.addItem(col)
         self.sort_combobox.activated[str].connect(self.cbComboboxColumn)
-        self.sort_combobox.setFixedSize(self.params.sort_combobox["size"][0], self.params.sort_combobox["size"][1])
-        
 
         self.entry_combobox = QtWidgets.QComboBox(self)
         self.entry_combobox.activated[str].connect(self.cbComboboxEntry)
-        self.entry_combobox.setFixedSize(self.params.entry_combobox["size"][0], self.params.entry_combobox["size"][1])
         
-
         self.order_combobox = QtWidgets.QComboBox(self)
         self.order_combobox.addItem("Sorting: ascending")
         self.order_combobox.addItem("Sorting: descending")
         self.order_combobox.activated[str].connect(self.cbComboboxOrder)
-        self.order_combobox.setFixedSize(self.params.order_combobox["size"][0], self.params.order_combobox["size"][1])
 
-        # add left button
+        # add left and right button
         self.button_left = QtWidgets.QPushButton('<-')
-        # self.button_add_route.clicked.connect(self.cbButtonAddRoute)
-        # self.button_add_route.setFixedSize(self.params.button_add_route["size"][0], self.params.button_add_route["size"][1])
-
-        # add right button
+        self.button_left.clicked.connect(self.cbButtonLeft)
         self.button_right = QtWidgets.QPushButton('->')
-        # self.button_add_route.clicked.connect(self.cbButtonAddRoute)
-        # self.button_add_route.setFixedSize(self.params.button_add_route["size"][0], self.params.button_add_route["size"][1])
+        self.button_right.clicked.connect(self.cbButtonRight)
         
         # create layout
         self._initLayout()
 
     def _initLayout(self):
-         # create data button layout
+        # main layout
+        self.setWindowTitle('Crack Track')
+        self.setMinimumSize(2400, 1600)
+
+        # create data button layout
+        self.button_add_route.setMinimumSize(120, 40)
+        self.button_save.setMinimumSize(120, 40)
+        self.sort_combobox.setMinimumSize(180, 40)
+        self.entry_combobox.setMinimumSize(180, 40)
+        self.order_combobox.setMinimumSize(180, 40)
         data_button_layout = QtWidgets.QHBoxLayout()
-        data_button_layout.addWidget(self.button_add_route)
-        data_button_layout.addWidget(self.button_save)
-        data_button_layout.addWidget(self.sort_combobox)
-        data_button_layout.addWidget(self.entry_combobox)
-        data_button_layout.addWidget(self.order_combobox)
+        data_button_layout.addWidget(self.button_add_route, stretch=1)
+        data_button_layout.addWidget(self.button_save, stretch=1)
+        data_button_layout.addWidget(self.sort_combobox, stretch=2)
+        data_button_layout.addWidget(self.entry_combobox, stretch=2)
+        data_button_layout.addWidget(self.order_combobox, stretch=2)
 
         # create map layout
+        self.gui_map.webView.setMinimumSize(1000, 600)
         map_layout = QtWidgets.QVBoxLayout()
         map_layout.addWidget(self.gui_map.webView)
         map_layout.addLayout(data_button_layout)
 
         # create img button layout
+        self.button_left.setMinimumSize(120, 40)
+        self.button_right.setMinimumSize(120, 40)
         img_button_layout = QtWidgets.QHBoxLayout()
-        img_button_layout.addWidget(self.button_left)
-        img_button_layout.addWidget(self.button_right)
+        img_button_layout.addStretch(3)
+        img_button_layout.addWidget(self.button_left, stretch=1)
+        img_button_layout.addWidget(self.button_right, stretch=1)
+        img_button_layout.addStretch(3)
 
         # create img layout
+        self.gui_images.image_label.setMinimumSize(900, 600)
         img_layout = QtWidgets.QVBoxLayout()
-        img_layout.addWidget(self.images)
+        img_layout.addWidget(self.gui_images.image_label)
         img_layout.addLayout(img_button_layout)
 
         # create upper layout
         upper_layout = QtWidgets.QHBoxLayout()
-        upper_layout.addLayout(map_layout)
-        upper_layout.addLayout(img_layout)
+        upper_layout.addLayout(map_layout, stretch=3)
+        upper_layout.addLayout(img_layout, stretch=2)
 
         # create  layout
+        self.gui_table.table.setMinimumSize(1000, 600)
+        self.gui_table.table_new_row.setMinimumSize(1000, 150)
         layout = QtWidgets.QVBoxLayout()
-        layout.addLayout(upper_layout)
-        layout.addWidget(self.gui_table.table)
-        layout.addWidget(self.gui_table.table_new_row)
+        layout.addLayout(upper_layout, stretch=12)
+        layout.addWidget(self.gui_table.table, stretch=3)
+        layout.addWidget(self.gui_table.table_new_row, stretch=1)
         self.setLayout(layout)  
 
     def cbComboboxColumn(self):
@@ -137,8 +130,12 @@ class GuiMain(QtWidgets.QWidget):
         self.gui_table.setSortColumn(column=column)
         self.gui_table.showData()
 
-        # get unique values of given column
+        # update images
         data = self.gui_table.getData()
+        sort_column, sort_entry, _ = self.gui_table.getSortParams()
+        self.gui_images.updateImages(data=data, sort_column=sort_column, sort_entry=sort_entry)
+
+        # get unique values of given column     
         unique_values = data[column].unique()
         unique_values = unique_values.astype(str).tolist()
         
@@ -156,6 +153,11 @@ class GuiMain(QtWidgets.QWidget):
         # set sorting parameters and show data
         self.gui_table.setSortEntry(entry=entry)
         self.gui_table.showData()
+
+        # update images
+        data = self.gui_table.getData()
+        sort_column, sort_entry, _ = self.gui_table.getSortParams()
+        self.gui_images.updateImages(data=data, sort_column=sort_column, sort_entry=sort_entry)
 
     def cbComboboxOrder(self):
         # print(str(self.order_combobox.currentText()))
@@ -192,11 +194,26 @@ class GuiMain(QtWidgets.QWidget):
         self.gui_table.setSortEntry(entry=entry)
         self.gui_table.showData()
 
+        # update images
+        data = self.gui_table.getData()
+        sort_column, sort_entry, _ = self.gui_table.getSortParams()
+        self.gui_images.updateImages(data=data, sort_column=sort_column, sort_entry=sort_entry)
+
     def cbButtonAddRoute(self):
         self.gui_table.addRoute()
 
     def cbButtonSave(self):
         self.gui_table.saveData()
+
+    def cbButtonLeft(self):
+        self.gui_images.decreaseIdx()
+
+    def cbButtonRight(self):
+        self.gui_images.increaseIdx()
+
+    def resizeEvent(self, event: QResizeEvent):
+        self.gui_images.set_image_size()
+        event.accept()
 
 
 

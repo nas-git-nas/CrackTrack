@@ -1,7 +1,7 @@
-id,region,crack,route,grade,stars,protection,ascend,style,date,latitude,longitude,north,east
-1,Jura Bernoise,Grandval,Blabla,8c+,,,,,,47.2912,7.42338,,
-2,Jura Bernoise,Grandval,Abla,8b+,,,,,,47.2912,7.62338,,
-3,Jura Bâloise,Pelzli,Abla,5a,,,,,,47.2912,7.82338,,
-4,Jura Bernoise,Grandval,blabla3,,,,,,,47.33882269,7.628631592,,
-5,Jura Bâloise,Pelzli,Blabla5,5b,,,,,,47.24940696,7.864837646,,
-6,Jura Bernoise,Grandval,hallo,3a+,,,,,,47.31182763,7.577819824,,
+id,region,crack,route,grade,stars,protection,ascend,style,date,latitude,longitude,north,east,imgs
+1,Jura Bernoise,Grandval,Blabla,8c+,,,,,,47.2912,7.42338,,,imgA
+2,Jura Bernoise,Grandval,Abla,8b+,,,,,,47.2912,7.62338,,,
+3,Jura Bâloise,Pelzli,Abla,5a,,,,,,47.2912,7.82338,,,imgB
+4,Jura Bernoise,Grandval,blabla3,,,,,,,47.33882269,7.628631592,,,
+5,Jura Bâloise,Pelzli,Blabla5,5b,,,,,,47.24940696,7.864837646,,,
+6,Jura Bernoise,Grandval,hallo,3a+,,,,,,47.31182763,7.577819824,,,
